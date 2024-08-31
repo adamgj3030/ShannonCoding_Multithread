@@ -7,7 +7,10 @@
 using namespace std;
 
 bool compare(pair<pair<char, int>, string> a, pair<pair<char, int>, string> b) {
-    return a.first.second > b.first.second;
+    if (a.first.second != b.first.second) {
+        return a.first.second > b.first.second;
+    }
+    return a.first.first > b.first.first;
 }
 
 int main() {
@@ -34,10 +37,8 @@ int main() {
     sort(charCodeVec.begin(), charCodeVec.end(), compare);
 
     for (auto temp : charCodeVec) {
-        cout << temp.first.first << " : " << temp.first.second << " : " << temp.second << endl;
+        cout << temp.first.first << " , " << temp.first.second << " , " << temp.second << endl;
     }
 
     return 0;
-
-    
 }
