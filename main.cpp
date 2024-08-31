@@ -6,32 +6,19 @@
 
 using namespace std;
 
-//shannonCode takes string and displays information
-void shannonCode(string line) {
 
-    int len = line.length();
-    int totalChar = 0;
-
-    //dictionary to hold frequency of each character
-    map<char, int> charCount;
-
-    for (int i = 0; i < len; ++i) {
-      char currChar = line[i];
-
-      charCount[currChar]++;
-
-      totalChar++;
-      cout << currChar << endl;
-    }
-
-
-    for (auto& it : charCount) {
-        cout << it.first << " : " << it.second << endl;
-    }
+struct CharCode {
+    char character;
+    int frequency;
+    string code;
 };
 
 int main() {
-    string test = "AAABAAABAAAAMMAAAAAU";
-    shannonCode(test);
+    string line = "AAABAAABAAAAMMAAAAAU";
+    int len = line.length();
+    
+    vector<
+
+
     return 0;
 }
