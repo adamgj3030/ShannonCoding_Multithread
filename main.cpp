@@ -7,7 +7,7 @@
 using namespace std;
 
 bool compare(pair<pair<char, int>, string> a, pair<pair<char, int>, string> b) {
-    return a.first.second < b.first.second;
+    return a.first.second > b.first.second;
 }
 
 int main() {
@@ -21,15 +21,14 @@ int main() {
         ++charMap[character];
     }
 
-    vector< pair <pair<char, int>, string>> charCodeVec; 
+    vector<pair<pair<char, int>, string>> charCodeVec; 
     
     for (auto charCount : charMap) {
         char character = charCount.first;
         int freq = charCount.second;
 
-        pair <pair<char, int>, string> tempPair {{character, freq}, ""};
+        pair<pair<char, int>, string> tempPair {{character, freq}, ""};
         charCodeVec.push_back(tempPair);
-
     }
 
     sort(charCodeVec.begin(), charCodeVec.end(), compare);
@@ -38,7 +37,7 @@ int main() {
         cout << temp.first.first << " : " << temp.first.second << " : " << temp.second << endl;
     }
 
-    
-
     return 0;
+
+    
 }
