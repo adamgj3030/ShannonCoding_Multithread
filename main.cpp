@@ -37,8 +37,7 @@ string decimalToBinary(float decimal, int precision) {
     return binary;
 }
 
-int main() {
-    string line = "AAABAAABAAAAMMAAAAAU";
+void shannonCode(string line) {
     int len = line.length();
     
     map<char, int> charCountMap;
@@ -95,6 +94,19 @@ int main() {
     }
 
     cout << "Encoded message: " << encodeMsg << endl;
+}
+
+int main() {
+    string line;
+    vector<string> input;
+    while(getline(cin, line)) {
+        input.push_back(line);
+    }
+
+    for (auto message : input) {
+        shannonCode(message);
+        cout << endl;
+    }
 
     return 0;
 }
