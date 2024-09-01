@@ -41,16 +41,16 @@ int main() {
     string line = "AAABAAABAAAAMMAAAAAU";
     int len = line.length();
     
-    map<char, int> charMap;
+    map<char, int> charCountMap;
 
     for (int i = 0; i < len; ++i) {
         char character = line[i];
-        ++charMap[character];
+        ++charCountMap[character];
     }
 
     vector<pair<pair<char, int>, string>> charCodeVec; 
     
-    for (auto charCount : charMap) {
+    for (auto charCount : charCountMap) {
         char character = charCount.first;
         int freq = charCount.second;
 
@@ -60,30 +60,41 @@ int main() {
 
     sort(charCodeVec.begin(), charCodeVec.end(), compare);
 
-    for (auto temp : charCodeVec) {
-        cout << temp.first.first << " , " << temp.first.second << " , " << temp.second << endl;
-    }
-
     float cumulativeProbability = 0;
+    map<char, string> charCodeMap;
 
     for (auto& temp : charCodeVec) {
-        cout << "Frequency: " << temp.first.second << endl;
 
         float probability = ((float)temp.first.second/len);
-        cout << "Probability: " << probability << endl;
 
         int precision = ceil(log2(1/probability));
-        cout << "Precision: " << precision << endl;
-        cout << "cumulativeProbability: " << cumulativeProbability << endl;
 
         string ShannonCode = decimalToBinary(cumulativeProbability, precision);
-        cout << "ShannonCode: " << ShannonCode << endl;
-
         temp.second = ShannonCode;
+        charCodeMap[temp.first.first] = ShannonCode;
 
         cumulativeProbability += probability;
     }
 
+    cout << "Message: " << line << endl;
+    cout << endl;
+
+    cout << "Alphabet:" << endl;
+    for (auto temp : charCodeVec) {
+        cout << "Symbol: "<< temp.first.first
+        << ", Frequency: " << temp.first.second 
+        << ", Shannon code: " << temp.second << endl;
+    }
+
+    cout << endl;
+
+    string encodeMsg = "";
+
+    for (int i = 0; i < len; ++i) {
+        encodeMsg += charCodeMap[line[i]];
+    }
+
+    cout << "Encoded message: " << encodeMsg << endl;
 
     return 0;
 }
