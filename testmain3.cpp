@@ -14,7 +14,6 @@ struct CharCode
     std::string code;
 };
 
-// Struct to store the line, the vector of CharCode, and the encoded line for each thread
 struct EncodedMsg
 {
     std::string line;
@@ -74,33 +73,61 @@ std::string decimalToBinary(float decimal, int precision)
 void *shannonCode(void *void_ptr) 
 {
     // change the void_ptr into a string line_ptr
-    EncodedMsg *curr_ptr = (EncodedMsg *) void_ptr;
+    EncodedMsg *currThread_ptr = (EncodedMsg *) void_ptr;
     
-    int lineSize = (curr_ptr->line).length();
+    int lineSize = (currThread_ptr->line).length();
+
+
+    // Stores unqiue characters and their associated frequencies from the line
+    for (int i = 0; i < lineSize; ++i)
+    {
+        char currChar = (currThread_ptr->line)[i];
+        auto it = std::find_if((currThread_ptr->charCodeVec).begin(), (currThread_ptr->charCodeVec).end(), [currChar](CharCode const& charCode) {
+            return charCode.character == currChar;
+        });
+        if (it == (currThread_ptr->charCodeVec).end())
+        {
+            CharCode temp;
+            temp.character = currChar;
+            temp.freq = 1;
+            (currThread_ptr->charCodeVec).push_back(temp);
+        }
+        else
+        {
+            ++(it->freq);
+        }
+
+    }
+        
+
+    
+
 
     // create a mapping to store each unique character and count their appearances 
     std::map<char, int> charCountMap;
 
     // iterate through each character for the given line
     // NOTE: COULD skip the mapping part and do this in the charCode struct 
-    for (int i = 0; i < lineSize; ++i) 
+    int len = (line).length();
+    for (int i = 0; i < len; i++) 
     {
         // Stores unqiue characters and their associated frequencies from the line
-        ++charCountMap[curr_ptr->line[i]];
+        ++charCountMap[line[i]];
     }
 
     // vector to sort the frequencies 
+    std::vector<CharCode> charCodeVec;
     CharCode temp;
     for (const auto& charCount: charCountMap)
     {
         temp.character = charCount.first;
         temp.freq = charCount.second;
         // each entry in the charCodeVec holds its character and associated frequency so far
-        curr_ptr->charCodeVec.push_back(temp);
+        charCodeVec.push_back(temp);
     }
 
     // sorts the charCodeVec based on frequencies, and if equal then characters
-    std::sort(curr_ptr->charCodeVec.begin(), curr_ptr->charCodeVec.end(), compareFreqChar);
+    std::sort(charCodeVec.begin(), charCodeVec.end(), compareFreqChar);
 
     // Keeps track of the Cumulative Probability as we iterate through the charCode vector
     float cumulativeProbability = 0;
@@ -108,11 +135,11 @@ void *shannonCode(void *void_ptr)
     // create a new mapping to hold the characters and their associated binary codes
     std::map<char, std::string> charCodeMap;
 
-    // finds the binary code for each character based on its frequency/probability
-    for (auto& charCode : curr_ptr->charCodeVec) 
+    
+    for (auto& charCode : charCodeVec) 
     {
         // probability = frequency / total freq (total freq is just the length of the line)
-        float probability = ((float)charCode.freq/lineSize);
+        float probability = ((float)charCode.freq/len);
 
         // precision = ceiling of log base 2 (1/probability)
         int precision = ceil(log2(1/probability));
@@ -126,15 +153,33 @@ void *shannonCode(void *void_ptr)
         cumulativeProbability += probability;
     }
 
+    std::cout << "Message: " << line << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "Alphabet:" << std::endl;
+
+    // prints out the each symbol in the line and their associated frequency and shannon code 
+    for (const auto& charCode : charCodeVec) 
+    {
+        std::cout << "Symbol: "<< charCode.character
+        << ", Frequency: " << charCode.freq 
+        << ", Shannon code: " << charCode.code << std::endl;
+    }
+    
+    std::cout << std::endl;
+
     // holds the finished encoded line
-    curr_ptr->encodedLine = "";
+    std::string encodeMsg = "";
 
     // iterates over the intial line
-    for (int i = 0; i < lineSize; ++i) {
+    for (int i = 0; i < len; ++i) {
         // Adds each encountered characters associated shannon code to the finished encoded line 
-        curr_ptr->encodedLine += charCodeMap[curr_ptr->line[i]];
+        encodeMsg += charCodeMap[line[i]];
     }
 
+    std::cout << "Encoded message: " << encodeMsg << std::endl;
+
+    std::cout << std::endl;
     return nullptr;
 }
 
@@ -171,31 +216,7 @@ int main()
     {
         pthread_join(tid[i], nullptr);
     }
-
-    // prints out the shannon code information for each thread
-    for (int i = 0; i < threadSize; i++) {
-        EncodedMsg currData = threadData[i];
-
-        std::cout << "Message: " << currData.line << std::endl;
-        std::cout << std::endl;
-
-        std::cout << "Alphabet:" << std::endl;
-
-        // prints out the each symbol in the line and their associated frequency and shannon code 
-        for (const auto& charCode : currData.charCodeVec) 
-        {
-            std::cout << "Symbol: "<< charCode.character
-            << ", Frequency: " << charCode.freq 
-            << ", Shannon code: " << charCode.code << std::endl;
-        }
-
-        std::cout << std::endl;
-
-        std::cout << "Encoded message: " << currData.encodedLine << std::endl;
-
-        std::cout << std::endl;
-
-    }
+    
 
     return 0;
 }
