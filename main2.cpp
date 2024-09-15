@@ -144,7 +144,7 @@ void *shannonCode(void *void_ptr)
 
     std::cout << "Encoded message: " << encodeMsg << std::endl;
 
-
+    std::cout << std::endl;
     return nullptr;
 }
 
@@ -172,7 +172,6 @@ int main()
             std::cerr << "Error creating thread" << std::endl;
 			return 1;
         }
-        std::cout << std::endl;
     }
 
     // join threads back together when they are finished
